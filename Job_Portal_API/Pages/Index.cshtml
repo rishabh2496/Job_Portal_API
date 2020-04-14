@@ -1,0 +1,223 @@
+﻿@page
+@{}
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Job Advertisement Portal</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body style="background-color:brown">
+    <div>
+        <!-- Main Area where data will display-->
+        <div class="container">
+            <div class="row">
+                <h1 style="text-align:center; font-family:Century; color:white;">Job Advertisement Portal</h1>
+            </div>
+            <div class="row">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#insertDetails">Insert Details</button>
+            </div>
+            <br />
+            <div class="row" id="JobPortalSection"></div>
+        </div>
+    </div>
+    <!-- web form to insert the data-->
+    <div class="modal" tabindex="-1" role="dialog" id="insertDetails">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Insert New Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="EmployerName">Employer Name</label>
+                            <input type="text" class="form-control" id="EmployerName" aria-describedby="EmployerNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="JobTitle">Job Title</label>
+                            <input type="text" class="form-control" id="JobTitle" aria-describedby="JobTitleHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="JobDescription">Job Description</label>
+                            <input type="text" class="form-control" id="JobDescription" aria-describedby="JobDescriptionHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="SalaryRange">Salary Range in K's</label>
+                            <input type="text" class="form-control" id="SalaryRange" aria-describedby="SalaryRangeHelp">
+                        </div>
+                         <div class="form-group" id="result">
+                        </div>
+                        <button type="button" onclick="insert()" class="btn btn-danger">Insert</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- web form to update the data-->
+    <div class="modal" tabindex="-1" role="dialog" id="UpdateDetails">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Record</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="Edit_id" aria-describedby="Id_Help">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_EmployerName">Employer Name</label>
+                            <input type="text" class="form-control" id="Edit_EmployerName" aria-describedby="Edit_EmployerNameHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_JobTitle">Job Title</label>
+                            <input type="text" class="form-control" id="Edit_JobTitle" aria-describedby="Edit_JobTitleHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_JobDescription">Job Description</label>
+                            <input type="text" class="form-control" id="Edit_JobDescription" aria-describedby="Edit_JobDescriptionHelp">
+                        </div>
+                        <div class="form-group">
+                            <label for="Edit_SalaryRange">Salary Range in K's</label>
+                            <input type="text" class="form-control" id="Edit_SalaryRange" aria-describedby="Edit_SalaryRangeHelp">
+                        </div>
+                        <div class="form-group" id="resultUpdate">
+                        </div>
+                        <button type="button" onclick="Update()" class="btn btn-danger">Update</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript Files-->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script>
+        var uri = 'api/JobPortals';
+        $(document).ready(function () {
+            // Gets all data
+            $.getJSON(uri).done(function (data) {
+                $("#Main_temp").tmpl(data).appendTo("#JobPortalSection");
+            });
+        });
+        function JobPortalData() {
+            $.getJSON(uri).done(function (data) {
+                $("#JobPortalSection").text("");
+                $("#Main_temp").tmpl(data).appendTo("#JobPortalSection");
+            });
+        }
+        //function to Insert Data
+        function insert() {
+            var _EmployerName = $('#EmployerName').val();
+            var _JobTitle = $('#JobTitle').val();
+            var _JobDescription = $('#JobDescription').val();
+            var _SalaryRange = $('#SalaryRange').val();
+
+            var JobPortal_Object = {
+                employer_Name: _EmployerName,
+                job_Title: _JobTitle,
+                job_Description: _JobDescription,
+                salaryRange: _SalaryRange
+            };
+            $.ajax({
+                type: "POST",
+                url: uri,
+                data: JSON.stringify(JobPortal_Object),
+                contentType: "application/json; charset=utf-8"
+            }).done(function (response) {
+                $("#result").html("Record inserted successfully");
+                JobPortalData();
+            }).fail(function (jqXHR, textStatus) {
+                $("#result").html("Record is not inserted. There is an error");
+            });
+        }
+           //function to Update Data
+        function Update() {
+            var _EmployerName = $('#Edit_EmployerName').val();
+            var _JobTitle = $('#Edit_JobTitle').val();
+            var _JobDescription = $('#Edit_JobDescription').val();
+            var _SalaryRange = $('#Edit_SalaryRange').val();
+
+            var JobPortalUpdate_Object = {
+                id: parseInt($('#Edit_id').val()),
+                employer_Name: _EmployerName,
+                job_Title: _JobTitle,
+                job_Description: _JobDescription,
+                salaryRange: _SalaryRange
+            };
+           
+            $.ajax({
+                type: "PUT",
+                url: uri + "/" + $('#Edit_id').val(),
+                data: JSON.stringify(JobPortalUpdate_Object),
+                contentType: "application/json; charset=utf-8"
+            }).done(function (response) {
+                $("#resultUpdate").html("Record updated successfully");
+                JobPortalData();
+            }).fail(function (jqXHR, textStatus) {
+                $("#resultUpdate").html("Record is not inserted. There is an error");
+            });
+        }
+        // function to remove record
+        function remove(id) {
+            var yes = confirm("Do you really want to delete this account?");
+            if (yes) {
+                $.ajax({
+                    type: "DELETE",
+                    url: uri + "/" + id,
+                }).done(function (response) {
+                    JobPortalData();
+                });
+            }
+        }
+        //function to display data in update form
+        function UpdateRecord(id) {
+            $.ajax({
+                type: "GET",
+                url: uri + "/" + id,
+                contentType: "application/json"
+            }).done(function (response) {
+                $('#Edit_id').val(response.id);
+                $('#Edit_EmployerName').val(response.employer_Name);
+                $('#Edit_JobTitle').val(response.job_Title);
+                $('#Edit_JobDescription').val(response.job_Description);
+                $('#Edit_SalaryRange').val(response.salaryRange);
+            });
+        }
+
+    </script>
+    <!--Template to display data-->
+    <script id="Main_temp" type="text/x-jquery-tmpl">
+        <div class="col-lg-12">
+            <div class="card border-secondary mb-3">
+                <img src="" class="card-img-top" alt="">
+                <div class="card-body">
+                    <h5 class="card-title"><b>Job Title:</b> ${job_Title}</h5>
+                    <p class="card-text"><b>Employee Name:</b> ${employer_Name}</p>
+                    <p class="card-text"><b>Job Description:</b> ${job_Description}</p>
+                    <p class="card-text"><b>Salary Range in K's:</b> ${salaryRange}</p>
+                    <button class="btn btn-outline-danger" onclick="UpdateRecord('${id}')" data-toggle="modal" data-target="#UpdateDetails">Update</button>
+                    <a href="#" class="btn btn-outline-dark" onclick="remove('${id}')">Delete</a>
+                </div>
+            </div>
+        </div>
+    </script>
+</body>
+</html>
+
+
